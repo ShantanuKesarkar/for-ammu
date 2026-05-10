@@ -530,61 +530,74 @@
     width: 100%;
     max-width: 720px;
   }
-  .closing-line {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: clamp(22px, 3vw, 30px);
-    color: var(--ink);
-    margin-bottom: clamp(28px, 4vw, 40px);
+  .closing-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: clamp(11px, 1.2vw, 13px);
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: rgba(58, 36, 24, 0.55);
+    margin-bottom: clamp(20px, 3vw, 28px);
     opacity: 0;
-    transition: opacity 1.6s ease 0.4s, transform 1.6s ease 0.4s;
-    transform: translateY(16px);
+    transition: opacity 1.4s ease 0.3s;
   }
-  .scene.active .closing-line { opacity: 1; transform: translateY(0); }
-  .closing-name {
+  .scene.active .closing-eyebrow { opacity: 1; }
+  .closing-question {
     font-family: 'Italiana', serif;
-    font-size: clamp(80px, 16vw, 200px);
-    line-height: 0.9;
+    font-size: clamp(44px, 8vw, 96px);
+    line-height: 1.1;
     color: var(--ink);
-    margin-bottom: clamp(24px, 3vw, 32px);
-    opacity: 0;
-    transition: opacity 2s ease 0.9s, transform 2s ease 0.9s;
-    transform: translateY(20px) scale(0.96);
     text-shadow: 0 4px 30px rgba(255, 200, 150, 0.5);
+    opacity: 0;
+    transition: opacity 2s ease 0.7s, transform 2s ease 0.7s;
+    transform: translateY(20px) scale(0.96);
+    margin-bottom: clamp(48px, 7vw, 80px);
   }
-  .scene.active .closing-name { opacity: 1; transform: translateY(0) scale(1); }
-  .closing-foot {
+  .scene.active .closing-question { opacity: 1; transform: translateY(0) scale(1); }
+  .closing-choices {
+    display: flex;
+    gap: clamp(16px, 3vw, 28px);
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    transition: opacity 1.4s ease 1.6s;
+  }
+  .scene.active .closing-choices { opacity: 1; }
+  .choice-btn {
+    position: relative;
+    padding: 20px 52px;
+    border-radius: 999px;
+    font-family: 'Italiana', serif;
+    font-size: clamp(26px, 3.5vw, 38px);
+    cursor: pointer;
+    border: 1.5px solid rgba(58, 36, 24, 0.25);
+    background: rgba(255, 247, 236, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--ink);
+    transition: all 350ms cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 10px 30px rgba(217, 106, 74, 0.12);
+  }
+  .choice-btn:hover {
+    background: rgba(217, 106, 74, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 18px 40px rgba(217, 106, 74, 0.28);
+  }
+  .choice-btn:active { transform: translateY(-1px) scale(1.01); }
+  .closing-answer {
+    margin-top: clamp(32px, 5vw, 48px);
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: clamp(18px, 2.2vw, 22px);
+    font-size: clamp(20px, 2.5vw, 26px);
     color: var(--accent);
     opacity: 0;
-    transition: opacity 1.6s ease 1.6s;
+    transform: translateY(10px);
+    transition: opacity 1s ease, transform 1s ease;
+    pointer-events: none;
   }
-  .scene.active .closing-foot { opacity: 1; }
-  .closing-replay {
-    margin-top: clamp(36px, 5vw, 48px);
-    background: transparent;
-    border: 1px solid rgba(58, 36, 24, 0.25);
-    color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    padding: 14px 28px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: all 300ms ease;
-    opacity: 0;
-    transition: opacity 1.4s ease 2.2s, background 250ms ease, transform 250ms ease, border-color 250ms ease;
-  }
-  .scene.active .closing-replay { opacity: 1; }
-  .closing-replay:hover {
-    background: rgba(255, 247, 236, 0.6);
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
+  .closing-answer.visible { opacity: 1; transform: translateY(0); }
 
   /* ============ HEART CONFETTI ============ */
   .confetti {
@@ -1048,10 +1061,13 @@
   <!-- 7. CLOSING -->
   <section class="scene" data-screen-label="07 Always">
     <div class="closing">
-      <p class="closing-line">always &amp; only,</p>
-      <h2 class="closing-name">Ammu &amp; me</h2>
-      <p class="closing-foot">— forever, the answer is yes ♡</p>
-      <button class="closing-replay" id="replayBtn" type="button">read it again</button>
+      <div class="closing-eyebrow">the most important question</div>
+      <h2 class="closing-question">Ammu, will you<br/>be with me forever?</h2>
+      <div class="closing-choices">
+        <button class="choice-btn" id="choiceYes1" type="button">Yes</button>
+        <button class="choice-btn" id="choiceYes2" type="button">Yes</button>
+      </div>
+      <p class="closing-answer" id="closingAnswer">i knew it. i love you ♡</p>
     </div>
   </section>
 
@@ -1164,11 +1180,10 @@
     if (playing) {
       audio.volume = isLetter ? 0.3 : 0.6;
     }
-    // closing scene: rain hearts
-    if (scenes[current].dataset.screenLabel === '07 Always') {
-      heartRain.start();
-    } else {
+    // closing scene: stop confetti when leaving
+    if (scenes[current].dataset.screenLabel !== '07 Always') {
       heartRain.stop();
+      document.getElementById('closingAnswer').classList.remove('visible');
     }
   }
 
@@ -1342,8 +1357,13 @@
     };
   })();
 
-  // ----- Replay button -----
-  document.getElementById('replayBtn').addEventListener('click', () => goTo(1));
+  // ----- Yes buttons — confetti on click -----
+  function onYesClick() {
+    heartRain.start();
+    document.getElementById('closingAnswer').classList.add('visible');
+  }
+  document.getElementById('choiceYes1').addEventListener('click', onYesClick);
+  document.getElementById('choiceYes2').addEventListener('click', onYesClick);
 
   // ----- Loading splash -----
   window.addEventListener('load', () => {
